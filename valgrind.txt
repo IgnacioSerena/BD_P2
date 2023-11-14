@@ -1,0 +1,59 @@
+==7750== Memcheck, a memory error detector
+==7750== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==7750== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==7750== Command: ./menu
+==7750== 
+SQL Error: 42P01 - ERROR: relation "flights" does not exist;
+Error while executing the query
+Error executing SQL query.
+SQL Error: 42P01 - ERROR: relation "flights" does not exist;
+Error while executing the query
+Error executing SQL query.
+==7750== 
+==7750== HEAP SUMMARY:
+==7750==     in use at exit: 410,229 bytes in 969 blocks
+==7750==   total heap usage: 62,935 allocs, 61,966 frees, 6,972,654 bytes allocated
+==7750== 
+==7750== 9 bytes in 1 blocks are possibly lost in loss record 85 of 360
+==7750==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7750==    by 0x4A0358E: strdup (strdup.c:42)
+==7750==    by 0x4915D54: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x4919098: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x48E9238: newterm_sp (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9B4C: newterm (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9BDF: initscr (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x10D1F2: _initsrc (windows.c:255)
+==7750==    by 0x10B158: main (menu.c:213)
+==7750== 
+==7750== 24 bytes in 1 blocks are possibly lost in loss record 197 of 360
+==7750==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7750==    by 0x4A7B18E: tsearch (tsearch.c:337)
+==7750==    by 0x4915D6E: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x4919098: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x48E9238: newterm_sp (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9B4C: newterm (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9BDF: initscr (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x10D1F2: _initsrc (windows.c:255)
+==7750==    by 0x10B158: main (menu.c:213)
+==7750== 
+==7750== 168 bytes in 1 blocks are possibly lost in loss record 291 of 360
+==7750==    at 0x484DA83: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==7750==    by 0x4915CCD: ??? (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x4919098: _nc_tiparm (in /usr/lib/x86_64-linux-gnu/libtinfo.so.6.3)
+==7750==    by 0x48E9238: newterm_sp (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9B4C: newterm (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x48E9BDF: initscr (in /usr/lib/x86_64-linux-gnu/libncurses.so.6.3)
+==7750==    by 0x10D1F2: _initsrc (windows.c:255)
+==7750==    by 0x10B158: main (menu.c:213)
+==7750== 
+==7750== LEAK SUMMARY:
+==7750==    definitely lost: 0 bytes in 0 blocks
+==7750==    indirectly lost: 0 bytes in 0 blocks
+==7750==      possibly lost: 201 bytes in 3 blocks
+==7750==    still reachable: 410,028 bytes in 966 blocks
+==7750==         suppressed: 0 bytes in 0 blocks
+==7750== Reachable blocks (those to which a pointer was found) are not shown.
+==7750== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==7750== 
+==7750== For lists of detected and suppressed errors, rerun with: -s
+==7750== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)
