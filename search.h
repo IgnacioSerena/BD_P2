@@ -6,7 +6,7 @@
 #define NCOURSES_SEARCH_H
 #include "windows.h"
 #include <string.h>
-/*#include <unistd.h>*/
+#include <unistd.h>
 void results_search(char * from, char *to, char *departure_date, int *n_choices, 
                     char *** choices, int max_length, int max_rows);
 

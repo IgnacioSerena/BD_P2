@@ -2,7 +2,7 @@
 #define AUX_H
 
 /* CONNECTION PARAMETERS, ADAPT TO YOUR SCENARIO */
-#define CONNECTION_PARS "DRIVER=PostgreSQL ANSI;DATABASE=test01;SERVER=localhost;PORT=5432;UID=alumnodb;PWD=alumnodb;"
+#define CONNECTION_PARS "DRIVER=PostgreSQL ANSI;DATABASE=flight;SERVER=localhost;PORT=5432;UID=alumnodb;PWD=alumnodb;"
 
 /* REPORT OF THE MOST RECENT ERROR USING HANDLE handle */
 void odbc_extract_error(char *fn, SQLHANDLE handle, SQLSMALLINT type);

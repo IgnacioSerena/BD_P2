@@ -29,7 +29,7 @@ OBJ = $(EXE).o bpass.o odbc.o loop.o  search.o windows.o
 $(EXE): $(DEPS) $(OBJ)
 	$(CC) -o $(EXE) $(OBJ) $(LDLIBS)
 
-all: dropdb createdb restore $(EXE)
+all: dropdb createdb restore $(EXE) 
 
 mycomando:
 	@echo aqui va una descripcion
