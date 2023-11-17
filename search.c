@@ -1,6 +1,3 @@
-/*
- * Created by roberto on 3/5/21.
- */
 #include "search.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,7 +7,7 @@
 #include "odbc.h"
 
 void results_search(char *from, char *to, char *departure_date,
-                    int *n_choices, char ***choices,
+                    int *n_choices, char ***choices, char ***msg_choices,
                     int max_length,
                     int max_rows)
 /**here you need to do your query and fill the choices array of strings
@@ -27,20 +24,16 @@ void results_search(char *from, char *to, char *departure_date,
   SQLHDBC dbc;
   SQLHSTMT stmt;
   SQLRETURN ret; /* ODBC API return status */
-  SQLCHAR sqlstate[6];
-  SQLINTEGER native_error;
-  SQLCHAR message_text[256];
-  SQLSMALLINT text_length;
   SQLINTEGER flight_id;
   SQLCHAR flight_type[64];
   SQLCHAR scheduled_departure[64];
   SQLCHAR scheduled_arrival[64];
   SQLCHAR aircraft_code[64];
   SQLINTEGER num_empty_seats;
-  FILE *f;
 
-  char query[1024];
+  char query[4096];
   char **query_result_set;
+  char query_msg_set[1024][1024];
   int i = 0;
   int t = 0;
 
@@ -110,7 +103,7 @@ direct_flights AS ( \
     AND NOT f.status = 'Cancelled' AND NOT f.status = 'Arrived' \
 ) \
 SELECT \
-  'Direct Flight' AS flight_type, \
+  '0' AS flight_type, \
   df.flight_id, \
   df.scheduled_departure, \
   df.scheduled_arrival, \
@@ -122,7 +115,7 @@ JOIN \
   empty_seats es ON df.flight_id = es.flight_id \
 UNION ALL \
 SELECT \
-  'Connecting Flight' AS flight_type, \
+  '1' AS flight_type, \
   cf.first_flight_id AS flight_id, \
   cf.first_scheduled_departure AS scheduled_departure, \
   cf.second_scheduled_arrival AS scheduled_arrival, \
@@ -133,59 +126,51 @@ FROM \
 JOIN \
   empty_seats es ON cf.first_flight_id = es.flight_id \
 ORDER BY \
-  scheduled_departure",
+  scheduled_departure, scheduled_arrival",
           from, to, departure_date, from, to, departure_date);
 
   SQLPrepare(stmt, (SQLCHAR *)query, SQL_NTS);
 
   SQLExecute(stmt);
 
-  f = fopen("p.log", "w");
-
-  i = 1;
-  while (SQL_SUCCEEDED(ret = SQLGetDiagRec(SQL_HANDLE_STMT, stmt, i, sqlstate, &native_error, message_text, sizeof(message_text), &text_length)))
-  {
-    fprintf(f, "SQL Error: %s - %s\n", sqlstate, message_text);
-    i++;
-  }
   /* Loop through the rows in the result-set */
   i = 0;
+
+  SQLBindCol(stmt, 1, SQL_C_CHAR, flight_type, sizeof(flight_type), NULL);
+  SQLBindCol(stmt, 2, SQL_INTEGER, &flight_id, sizeof(SQL_INTEGER), NULL);
+  SQLBindCol(stmt, 3, SQL_C_CHAR, scheduled_departure, sizeof(scheduled_departure), NULL);
+  SQLBindCol(stmt, 4, SQL_C_CHAR, scheduled_arrival, sizeof(scheduled_arrival), NULL);
+  SQLBindCol(stmt, 5, SQL_C_CHAR, aircraft_code, sizeof(aircraft_code), NULL);
+  SQLBindCol(stmt, 6, SQL_INTEGER, &num_empty_seats, sizeof(SQL_INTEGER), NULL);
+
   while (SQL_SUCCEEDED(ret = SQLFetch(stmt)))
   {
-    ret = SQLGetData(stmt, 1, SQL_C_CHAR, flight_type, sizeof(flight_type), NULL);
-    ret = SQLGetData(stmt, 2, SQL_INTEGER, &flight_id, sizeof(SQLINTEGER), NULL);
-    ret = SQLGetData(stmt, 3, SQL_C_CHAR, scheduled_departure, sizeof(scheduled_departure), NULL);
-    ret = SQLGetData(stmt, 4, SQL_C_CHAR, scheduled_arrival, sizeof(scheduled_arrival), NULL);
-    ret = SQLGetData(stmt, 5, SQL_C_CHAR, aircraft_code, sizeof(aircraft_code), NULL);
-    ret = SQLGetData(stmt, 6, SQL_INTEGER, &num_empty_seats, sizeof(SQLINTEGER), NULL);
-
-    if (SQL_SUCCEEDED(ret))
-    {
-      sprintf(query_result_set[i], "%s %d %s %s %s %d", flight_type, flight_id, scheduled_departure,
-              scheduled_arrival, aircraft_code, num_empty_seats);
-      i++;
-    }
+    sprintf(query_result_set[i], "%d. El vuelo con id %d saldrá en la fecha y hora %s, con %s conexiones", i+1, flight_id,
+    scheduled_departure, flight_type);
+    sprintf(query_msg_set[i], "Id:%d, Conexiones:%s, Salida:%s, Llegada:%s, Nave:%s, Sitios:%d", flight_id, flight_type, scheduled_departure, scheduled_arrival, 
+    aircraft_code, num_empty_seats);
+    i++;
   }
 
   *n_choices = i;
   max_rows = MIN(*n_choices, max_rows);
-  
   for (i = 0; i < max_rows; i++)
   {
-    fprintf(f, "%s\n", query_result_set[i]);
-  }
-  fclose(f);
-
-  for (i = 0; i < max_rows; i++)
-  {
-    t = strlen(query_result_set[i]) + 1;
+    t = (int)strlen(query_result_set[i]) + 1;
     t = MIN(t, max_length);
     strncpy((*choices)[i], query_result_set[i], t);
   }
 
+  max_rows = MIN(*n_choices, max_rows);
+  for (i = 0; i < max_rows; i++)
+  {
+    t = (int)strlen(query_msg_set[i]) + 1;
+    t = MIN(t, max_length);
+    strncpy((*msg_choices)[i], query_msg_set[i], t);
+  }
+
   for (i = 0; i < max_rows; i++)
     free(query_result_set[i]);
-
   free(query_result_set);
 
   /* free up statement handle */

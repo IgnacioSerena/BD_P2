@@ -45,6 +45,7 @@ typedef struct _Menus{
     int no_items;
     ITEM **menuitems;
     char **out_win_choices;
+    char **out_msg_choices;
 } _Menus;
 
 typedef struct _Forms{

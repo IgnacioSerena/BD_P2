@@ -162,6 +162,13 @@ static void create_out(_Windows *windows, _Menus *menu)
     for (i = 0; i < windows->rows_out_win; i++)
         (menu->out_win_choices)[i] =
                 (char *) calloc(windows->cols_out_win, sizeof(char *));
+
+    menu->out_msg_choices =
+            (char **) calloc(windows->rows_out_win, sizeof(char *));
+
+    for (i = 0; i < windows->rows_out_win; i++)
+        (menu->out_msg_choices)[i] =
+                (char *) calloc(windows->cols_out_win, sizeof(char *));
 }
 
 static void create_msg(_Windows *windows)
